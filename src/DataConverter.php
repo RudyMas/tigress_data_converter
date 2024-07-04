@@ -23,6 +23,11 @@ class DataConverter
     private stdClass $objectData;
     private string $xmlData;
 
+    /**
+     * Get the version of the DataConverter
+     *
+     * @return string
+     */
     public static function version(): string
     {
         return '1.0.0';
