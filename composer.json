@@ -1,0 +1,24 @@
+{
+  "name": "tigress/data-converter",
+  "description": "Tigress data converter library",
+  "type": "library",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Rudy Mas",
+      "email": "rudy.mas@rudymas.be",
+      "homepage": "https://rudymas.be",
+      "role": "Developer"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=8.3",
+    "tigress/file-manager": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Tigress\\": "src/"
+    }
+  }
+}
