@@ -23,9 +23,9 @@ class DataConverter
     private stdClass $objectData;
     private string $xmlData;
 
-    public function __construct()
+    public static function version(): string
     {
-        define('TIGRESS_DATA_CONVERTER_VERSION', '1.0.0');
+        return '1.0.0';
     }
 
     public function __destruct()
