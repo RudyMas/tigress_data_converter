@@ -153,12 +153,13 @@ class DataConverter
      * Convert array to XML
      *
      * @param string $rootNode
+     * @param string $item
      * @return void
      */
-    public function arrayToXml(string $rootNode = 'root'): void
+    public function arrayToXml(string $rootNode = 'root', string $item = 'item'): void
     {
         $xml = new SimpleXMLElement("<?xml version=\"1.0\"?><$rootNode></$rootNode>");
-        $this->arrayToXmlRec($this->arrayData, $xml);
+        $this->arrayToXmlRec($this->arrayData, $xml, $item);
         $this->setXmlData($xml->asXML());
     }
 
@@ -188,12 +189,13 @@ class DataConverter
      * Convert CSV to XML
      *
      * @param string $rootNode
+     * @param string $item
      * @return void
      */
-    public function csvToXml(string $rootNode = 'root'): void
+    public function csvToXml(string $rootNode = 'root', string $item = 'item'): void
     {
         $this->csvToArray();
-        $this->arrayToXml($rootNode);
+        $this->arrayToXml($rootNode, $item);
     }
 
     /**
@@ -222,12 +224,13 @@ class DataConverter
      * Convert JSON to XML
      *
      * @param string $rootNode
+     * @param string $item
      * @return void
      */
-    public function jsonToXml(string $rootNode = 'root'): void
+    public function jsonToXml(string $rootNode = 'root', string $item = 'item'): void
     {
         $this->jsonToArray();
-        $this->arrayToXml($rootNode);
+        $this->arrayToXml($rootNode, $item);
     }
 
     /**
@@ -477,16 +480,17 @@ class DataConverter
      *
      * @param array $arrayData
      * @param SimpleXMLElement $xml
+     * @param string $item
      * @return void
      */
-    private function arrayToXmlRec(array $arrayData, SimpleXMLElement $xml): void
+    private function arrayToXmlRec(array $arrayData, SimpleXMLElement $xml, string $item = 'item'): void
     {
         foreach ($arrayData as $key => $value) {
             if (is_array($value)) {
                 if (!is_int($key)) {
                     $this->arrayToXmlRec($value, $xml->addChild($key));
                 } else {
-                    $this->arrayToXmlRec($value, $xml->addChild('item'));
+                    $this->arrayToXmlRec($value, $xml->addChild($item));
                 }
             } else {
                 $xml->addChild($key, $value);
