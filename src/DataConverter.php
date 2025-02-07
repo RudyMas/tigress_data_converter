@@ -2,6 +2,7 @@
 
 namespace Tigress;
 
+use Exception;
 use SimpleXMLElement;
 use stdClass;
 
@@ -9,9 +10,9 @@ use stdClass;
  * Class Data Converter (PHP version 8.4)
  *
  * @author Rudy Mas <rudy.mas@rudymas.be>
- * @copyright 2024, rudymas.be. (http://www.rudymas.be/)
+ * @copyright 2024-2025, rudymas.be. (http://www.rudymas.be/)
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version 2024.11.28.0
+ * @version 2025.02.07.0
  * @package Tigress\DataConverter
  */
 class DataConverter
@@ -29,7 +30,7 @@ class DataConverter
      */
     public static function version(): string
     {
-        return '2024.11.28';
+        return '2025.02.07';
     }
 
     /**
@@ -160,13 +161,14 @@ class DataConverter
      * Convert array to XML
      *
      * @param string $rootNode
-     * @param string $item
+     * @param string|null $item
      * @return void
+     * @throws Exception
      */
-    public function arrayToXml(string $rootNode = 'root', string $item = 'item'): void
+    public function arrayToXml(string $rootNode = 'root', ?string $item = null): void
     {
-        $xml = new SimpleXMLElement("<?xml version=\"1.0\"?><$rootNode></$rootNode>");
-        $this->arrayToXmlRec($this->arrayData, $xml, $item);
+        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><' . $rootNode . '/>');
+        $this->arrayToXmlRec($xml, $this->arrayData, $item);
         $this->setXmlData($xml->asXML());
     }
 
@@ -485,22 +487,44 @@ class DataConverter
     /**
      * Recursive function to convert array to XML
      *
-     * @param array $arrayData
-     * @param SimpleXMLElement $xml
-     * @param string $item
+     * @param SimpleXMLElement $obj
+     * @param array $array
+     * @param string|null $prevKey
      * @return void
      */
-    private function arrayToXmlRec(array $arrayData, SimpleXMLElement $xml, string $item = 'item'): void
+    private function arrayToXmlRec(SimpleXMLElement &$obj, array $array, ?string $prevKey = 'data'): void
     {
-        foreach ($arrayData as $key => $value) {
+        foreach ($array as $key => $value) {
             if (is_array($value)) {
-                if (!is_int($key)) {
-                    $this->arrayToXmlRec($value, $xml->addChild($key));
+                if (isset($value[0])) {
+                    foreach ($value as $subValue) {
+                        if (is_array($subValue)) {
+                            $node = $obj->addChild($key);
+                            $this->arrayToXmlRec($node, $subValue, $key);
+                        } else {
+                            $obj->addChild($key, $subValue);
+                        }
+                    }
+                } elseif ($key == '@attributes') {
+                    foreach ($value as $k => $v) {
+                        $obj->addAttribute($k, $v);
+                    }
                 } else {
-                    $this->arrayToXmlRec($value, $xml->addChild($item));
+                    if (isset($value['_value'])) {
+                        $node = $obj->addChild($key, $value['_value']);
+                    } else {
+                        $node = $obj->addChild($key);
+                    }
+                    $this->arrayToXmlRec($node, $value, $key);
                 }
             } else {
-                $xml->addChild($key, $value);
+                if ($key == '_value') {
+                    // This value is already set!!!
+                } elseif (is_numeric($key)) {
+                    $obj->addChild($prevKey, $value);
+                } else {
+                    $obj->addChild($key, $value);
+                }
             }
         }
     }
