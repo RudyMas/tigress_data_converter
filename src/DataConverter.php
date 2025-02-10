@@ -12,7 +12,7 @@ use stdClass;
  * @author Rudy Mas <rudy.mas@rudymas.be>
  * @copyright 2024-2025, rudymas.be. (http://www.rudymas.be/)
  * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version 2025.02.07.0
+ * @version 2025.02.10.0
  * @package Tigress\DataConverter
  */
 class DataConverter
@@ -30,7 +30,7 @@ class DataConverter
      */
     public static function version(): string
     {
-        return '2025.02.07';
+        return '2025.02.10';
     }
 
     /**
@@ -161,14 +161,14 @@ class DataConverter
      * Convert array to XML
      *
      * @param string $rootNode
-     * @param string|null $item
+     * @param string|null $prevKey
      * @return void
      * @throws Exception
      */
-    public function arrayToXml(string $rootNode = 'root', ?string $item = null): void
+    public function arrayToXml(string $rootNode = 'root', ?string $prevKey = 'data'): void
     {
         $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><' . $rootNode . '/>');
-        $this->arrayToXmlRec($xml, $this->arrayData, $item);
+        $this->arrayToXmlRec($xml, $this->arrayData, $prevKey);
         $this->setXmlData($xml->asXML());
     }
 
@@ -198,13 +198,14 @@ class DataConverter
      * Convert CSV to XML
      *
      * @param string $rootNode
-     * @param string $item
+     * @param string $prevKey
      * @return void
+     * @throws Exception
      */
-    public function csvToXml(string $rootNode = 'root', string $item = 'item'): void
+    public function csvToXml(string $rootNode = 'root', string $prevKey = 'data'): void
     {
         $this->csvToArray();
-        $this->arrayToXml($rootNode, $item);
+        $this->arrayToXml($rootNode, $prevKey);
     }
 
     /**
@@ -233,13 +234,14 @@ class DataConverter
      * Convert JSON to XML
      *
      * @param string $rootNode
-     * @param string $item
+     * @param string $prevKey
      * @return void
+     * @throws Exception
      */
-    public function jsonToXml(string $rootNode = 'root', string $item = 'item'): void
+    public function jsonToXml(string $rootNode = 'root', string $prevKey = 'data'): void
     {
         $this->jsonToArray();
-        $this->arrayToXml($rootNode, $item);
+        $this->arrayToXml($rootNode, $prevKey);
     }
 
     /**
@@ -268,10 +270,12 @@ class DataConverter
      *
      * @param string $rootNode
      * @return void
+     * @throws Exception
      */
     public function objectToXml(string $rootNode = 'root'): void
     {
-        $this->setXmlData(json_encode($this->objectData));
+        $this->setArrayData(json_decode(json_encode($this->objectData), true));
+        $this->arrayToXml($rootNode);
     }
 
     /**

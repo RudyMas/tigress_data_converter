@@ -15,7 +15,7 @@
   "require": {
     "php": ">=8.4",
     "ext-simplexml": "*",
-    "tigress/file-manager": ">=2024"
+    "tigress/file-manager": "^2025"
   },
   "autoload": {
     "psr-4": {
