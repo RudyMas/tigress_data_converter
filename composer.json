@@ -2,7 +2,7 @@
   "name": "tigress/data-converter",
   "description": "Tigress data converter library",
   "type": "library",
-  "license": "GPL-3.0-or-later",
+  "license": "Apache-2.0",
   "authors": [
     {
       "name": "Rudy Mas",
